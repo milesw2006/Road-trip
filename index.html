@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Southwest Road Trip · June 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; }
+
+    /* HEADER */
+    .header {
+      background: #fff;
+      border-bottom: 3px solid #2563eb;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+    }
+    .header-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: #2563eb;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .header h1 {
+      font-size: clamp(1.7rem, 5vw, 2.4rem);
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .header-sub {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-bottom: 1.75rem;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #2563eb;
+      color: #fff;
+      padding: 0.65rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .stats {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-val { font-size: 1.4rem; font-weight: 700; color: #2563eb; }
+    .stat-label { font-size: 0.65rem; color: #cbd5e1; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; margin-top: 0.1rem; }
+
+    /* ALERT */
+    .alert {
+      background: #eff6ff;
+      border-bottom: 1px solid #bfdbfe;
+      padding: 0.6rem 1.5rem;
+      text-align: center;
+      font-size: 0.79rem;
+      color: #1d4ed8;
+    }
+    .alert a { color: #2563eb; font-weight: 600; }
+
+    /* MAIN */
+    .main { max-width: 720px; margin: 0 auto; padding: 1.75rem 1.25rem; }
+
+    /* DRIVE PILL */
+    .drive-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.5rem;
+    }
+    .drive-line { flex: 1; height: 1px; background: #e2e8f0; }
+    .drive-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* STOP */
+    .stop { margin-bottom: 0.5rem; }
+    .stop-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .stop-header.open {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      border-radius: 8px 8px 0 0;
+    }
+    .stop-num {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #f1f5f9; color: #94a3b8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .stop-header.open .stop-num { background: #2563eb; color: #fff; }
+    .stop-name { font-weight: 600; font-size: 0.97rem; color: #0f172a; }
+    .stop-tag {
+      font-size: 0.65rem; color: #2563eb; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: #dbeafe; padding: 0.12rem 0.45rem; border-radius: 20px;
+    }
+    .stop-dates { font-size: 0.74rem; color: #94a3b8; margin-top: 0.1rem; }
+    .stop-arrow { color: #cbd5e1; font-size: 0.75rem; flex-shrink: 0; margin-left: auto; }
+
+    /* PANEL */
+    .panel {
+      background: #fff;
+      border: 1px solid #bfdbfe;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      display: none;
+    }
+    .panel.open { display: block; }
+
+    /* TABS */
+    .tabs { display: flex; border-bottom: 1px solid #f1f5f9; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      background: transparent; border: none;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      cursor: pointer; font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 600; }
+
+    /* TAB CONTENT */
+    .tab-content { padding: 1.25rem 1.4rem; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .description { color: #475569; line-height: 1.7; margin-bottom: 1.1rem; font-size: 0.9rem; }
+    .section-label { font-size: 0.65rem; color: #94a3b8; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.45rem; }
+    .must-do-item {
+      display: flex; align-items: flex-start; gap: 0.45rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #f8fafc;
+      font-size: 0.86rem; color: #334155;
+    }
+    .must-do-item:last-child { border-bottom: none; }
+    .arrow { color: #2563eb; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+    .must-do-list { margin-bottom: 1.1rem; }
+
+    .btn-blue {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #2563eb; color: #fff;
+      padding: 0.48rem 1rem; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .btn-blue:hover { background: #1d4ed8; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #fff; border: 1px solid #bfdbfe; color: #2563eb;
+      padding: 0.48rem 1rem; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600;
+    }
+    .btn-outline:hover { background: #eff6ff; }
+    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .camp-box {
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 6px; padding: 1rem 1.1rem; margin-bottom: 0.9rem;
+    }
+    .camp-name { font-weight: 600; font-size: 0.93rem; color: #0f172a; margin-bottom: 0.2rem; }
+    .camp-price { font-size: 0.8rem; color: #2563eb; font-weight: 600; margin-bottom: 0.4rem; }
+    .camp-tip { font-size: 0.82rem; color: #475569; line-height: 1.6; }
+
+    .hike-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 0.5rem;
+    }
+    .hike-name { font-weight: 600; font-size: 0.9rem; color: #0f172a; margin-bottom: 0.2rem; }
+    .hike-desc { font-size: 0.78rem; color: #64748b; margin-bottom: 0.45rem; }
+    .hike-link { color: #2563eb; font-size: 0.77rem; font-weight: 600; }
+    .hike-link:hover { text-decoration: underline; }
+
+    .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 8px; overflow: hidden; background: #f1f5f9; }
+    .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .video-more { display: inline-block; margin-top: 0.65rem; color: #2563eb; font-size: 0.78rem; font-weight: 600; }
+    .video-more:hover { text-decoration: underline; }
+
+    /* FLIGHTS */
+    .flights-section {
+      margin-top: 2rem;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .flights-header {
+      background: #eff6ff;
+      border-bottom: 1px solid #bfdbfe;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .flights-header-title { font-weight: 700; font-size: 0.97rem; color: #0f172a; }
+    .flights-header-sub { font-size: 0.75rem; color: #64748b; margin-top: 0.1rem; }
+    .flights-body { padding: 1rem 1.25rem; }
+    .flight-note {
+      font-size: 0.8rem; color: #475569; line-height: 1.6;
+      margin-bottom: 1rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+    }
+    .flight-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .flight-card:last-of-type { margin-bottom: 1rem; }
+    .flight-airline { font-weight: 600; font-size: 0.9rem; color: #0f172a; }
+    .flight-route { font-size: 0.78rem; color: #64748b; margin-top: 0.1rem; }
+    .flight-price { font-size: 1.1rem; font-weight: 700; color: #2563eb; white-space: nowrap; }
+    .flight-price-note { font-size: 0.65rem; color: #94a3b8; font-weight: 400; display: block; }
+    .flight-search-btn {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #2563eb; color: #fff;
+      padding: 0.45rem 0.9rem; border-radius: 6px;
+      font-size: 0.77rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .flight-search-btn:hover { background: #1d4ed8; }
+    .flight-search-outline {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: #fff; border: 1px solid #bfdbfe; color: #2563eb;
+      padding: 0.45rem 0.9rem; border-radius: 6px;
+      font-size: 0.77rem; font-weight: 600;
+      white-space: nowrap;
+    }
+    .flight-search-outline:hover { background: #eff6ff; }
+    .flights-cta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+
+    /* FOOTER */
+    .footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; text-align: center; }
+    .footer-links { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.7rem; }
+    .footer-link {
+      background: #fff; border: 1px solid #bfdbfe; color: #2563eb;
+      padding: 0.42rem 0.85rem; border-radius: 6px;
+      font-size: 0.77rem; font-weight: 600;
+    }
+    .footer-link:hover { background: #eff6ff; }
+    .footer-end { margin-top: 1.5rem; font-size: 0.75rem; color: #e2e8f0; }
+
+    @media (max-width: 480px) {
+      .header { padding: 2rem 1.25rem 1.5rem; }
+      .tab-btn { padding: 0.55rem 0.7rem; font-size: 0.68rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">June 5 – June 27, 2026 &nbsp;·&nbsp; 23 Days &nbsp;·&nbsp; ~565 Miles</div>
+    <h1>Southwest Road Trip</h1>
+    <p class="header-sub">Boulder → Moab → Page → Scottsdale</p>
+    <a href="https://www.google.com/maps/dir/Boulder,+CO/Moab,+UT/Page,+AZ/Scottsdale,+AZ" target="_blank" class="btn-primary">🗺️ Open Full Route in Google Maps</a>
+    <div class="stats">
+      <div><div class="stat-val">4</div><div class="stat-label">Stops</div></div>
+      <div><div class="stat-val">23</div><div class="stat-label">Days</div></div>
+      <div><div class="stat-val">~565</div><div class="stat-label">Miles</div></div>
+      <div><div class="stat-val">2</div><div class="stat-label">Family Stays</div></div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert">
+    ⚡ <strong>Book Devils Garden now</strong> on <a href="https://recreation.gov" target="_blank">recreation.gov</a>
+    &nbsp;·&nbsp;
+    Book <strong>Antelope Canyon tour</strong> at <a href="https://www.navajotours.com" target="_blank">navajotours.com</a>
+    &nbsp;·&nbsp;
+    Cheap camping on <a href="https://thedyrt.com" target="_blank">The Dyrt</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- STOP 1: BOULDER -->
+    <div class="stop" id="stop-1">
+      <div class="stop-header" onclick="toggleStop(1)">
+        <div class="stop-num" id="num-1">1</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap">
+            <span class="stop-name">🏔️ Boulder, Colorado</span>
+            <span class="stop-tag">Home Base with Dad</span>
+          </div>
+          <div class="stop-dates">Jun 5–12 · 8 days</div>
+        </div>
+        <span class="stop-arrow" id="arrow-1">▼</span>
+      </div>
+      <div class="panel" id="panel-1">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(1,'overview',this)">Overview</button>
+          <button class="tab-btn" onclick="switchTab(1,'camping',this)">Camping</button>
+          <button class="tab-btn" onclick="switchTab(1,'hikes',this)">Hikes</button>
+          <button class="tab-btn" onclick="switchTab(1,'video',this)">Video</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active" id="1-overview">
+            <p class="description">A full week with your dad — hike the Flatirons, explore Pearl Street, grab breakfast burritos, and ease into the trip at altitude. No rush, good vibes.</p>
+            <div class="section-label">Must-Do</div>
+            <div class="must-do-list">
+              <div class="must-do-item"><span class="arrow">→</span>Pearl Street Mall — food, coffee, street performers</div>
+              <div class="must-do-item"><span class="arrow">→</span>Chautauqua Park at sunrise</div>
+              <div class="must-do-item"><span class="arrow">→</span>Day trip to Rocky Mountain National Park (1.5 hrs away)</div>
+              <div class="must-do-item"><span class="arrow">→</span>Eldorado Canyon State Park</div>
+            </div>
+            <a href="https://maps.google.com/?q=Boulder+Colorado" target="_blank" class="btn-blue">📍 Open in Google Maps</a>
+          </div>
+          <div class="tab-pane" id="1-camping">
+            <div class="camp-box">
+              <div class="camp-name">🏠 Stay with Dad</div>
+              <div class="camp-tip">💡 Home base — save your money for the road! Want one night under the stars? Roosevelt National Forest just west of Boulder has free dispersed camping.</div>
+            </div>
+            <div class="btn-group">
+              <a href="https://maps.google.com/?q=Boulder+Colorado" target="_blank" class="btn-blue">📍 Google Maps</a>
+              <a href="https://thedyrt.com/camping/colorado/boulder" target="_blank" class="btn-outline">🏕️ The Dyrt</a>
+              <a href="https://recreation.gov" target="_blank" class="btn-outline">🏛️ Recreation.gov</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="1-hikes">
+            <div class="hike-card">
+              <div class="hike-name">🥾 Royal Arch Trail</div>
+              <div class="hike-desc">5.4mi · Strenuous · Iconic arch with city views</div>
+              <a href="https://www.alltrails.com/trail/us/colorado/royal-arch-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+            <div class="hike-card">
+              <div class="hike-name">🥾 South Boulder Peak</div>
+              <div class="hike-desc">9.1mi · Hard · Best summit hike from town</div>
+              <a href="https://www.alltrails.com/trail/us/colorado/south-boulder-peak-trail-via-shadow-canyon" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="1-video">
+            <div class="section-label" style="margin-bottom:0.7rem">YouTube Travel Guide</div>
+            <div class="video-wrap">
+              <iframe src="https://www.youtube.com/embed/qYv9BrFJJ6c" title="Boulder Colorado travel guide" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <a href="https://www.youtube.com/results?search_query=Boulder+Colorado+travel+guide" target="_blank" class="video-more">🎬 More videos on YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRIVE PILL -->
+    <div class="drive-row">
+      <div class="drive-line"></div>
+      <div class="drive-pill">🚗 4.5 hrs from Boulder · 240 mi</div>
+      <div class="drive-line"></div>
+    </div>
+
+    <!-- STOP 2: MOAB -->
+    <div class="stop" id="stop-2">
+      <div class="stop-header" onclick="toggleStop(2)">
+        <div class="stop-num" id="num-2">2</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap">
+            <span class="stop-name">🏜️ Moab, Utah</span>
+            <span class="stop-tag">Red Rock Adventure</span>
+          </div>
+          <div class="stop-dates">Jun 13–17 · 5 nights</div>
+        </div>
+        <span class="stop-arrow" id="arrow-2">▼</span>
+      </div>
+      <div class="panel" id="panel-2">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(2,'overview',this)">Overview</button>
+          <button class="tab-btn" onclick="switchTab(2,'camping',this)">Camping</button>
+          <button class="tab-btn" onclick="switchTab(2,'hikes',this)">Hikes</button>
+          <button class="tab-btn" onclick="switchTab(2,'video',this)">Video</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active" id="2-overview">
+            <p class="description">4.5 hrs from Boulder. The adventure capital of the American West — Arches, Canyonlands, slickrock, and some of the best stargazing on earth. Three full days to explore.</p>
+            <div class="section-label">Must-Do</div>
+            <div class="must-do-list">
+              <div class="must-do-item"><span class="arrow">→</span>Sunrise at Delicate Arch</div>
+              <div class="must-do-item"><span class="arrow">→</span>Canyonlands Island in the Sky overlooks</div>
+              <div class="must-do-item"><span class="arrow">→</span>Stargazing from camp — near zero light pollution</div>
+            </div>
+            <a href="https://maps.google.com/?q=Moab+Utah" target="_blank" class="btn-blue">📍 Open in Google Maps</a>
+          </div>
+          <div class="tab-pane" id="2-camping">
+            <div class="camp-box">
+              <div class="camp-name">🏕️ Devils Garden Campground</div>
+              <div class="camp-price">~$25/night</div>
+              <div class="camp-tip">💡 Inside Arches National Park — the best campsite in the region. Book on recreation.gov as soon as possible, fills months in advance.</div>
+            </div>
+            <div class="btn-group">
+              <a href="https://maps.google.com/?q=Devils+Garden+Campground+Arches+National+Park" target="_blank" class="btn-blue">📍 Google Maps</a>
+              <a href="https://thedyrt.com/camping/utah/devils-garden-campground" target="_blank" class="btn-outline">🏕️ The Dyrt</a>
+              <a href="https://recreation.gov" target="_blank" class="btn-outline">🏛️ Recreation.gov</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="2-hikes">
+            <div class="hike-card">
+              <div class="hike-name">🥾 Delicate Arch Trail</div>
+              <div class="hike-desc">3mi · Moderate · The iconic Utah arch — go at sunrise</div>
+              <a href="https://www.alltrails.com/trail/us/utah/delicate-arch-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+            <div class="hike-card">
+              <div class="hike-name">🥾 Mesa Arch</div>
+              <div class="hike-desc">0.5mi · Easy · Breathtaking canyon overlook at dawn</div>
+              <a href="https://www.alltrails.com/trail/us/utah/mesa-arch-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+            <div class="hike-card">
+              <div class="hike-name">🥾 Devils Garden Loop</div>
+              <div class="hike-desc">7.8mi · Hard · 8 named arches in one hike</div>
+              <a href="https://www.alltrails.com/trail/us/utah/devils-garden-loop-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="2-video">
+            <div class="section-label" style="margin-bottom:0.7rem">YouTube Travel Guide</div>
+            <div class="video-wrap">
+              <iframe src="https://www.youtube.com/embed/MpFNdTXALuY" title="Moab Utah travel guide" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <a href="https://www.youtube.com/results?search_query=Moab+Utah+travel+guide+Arches" target="_blank" class="video-more">🎬 More videos on YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRIVE PILL -->
+    <div class="drive-row">
+      <div class="drive-line"></div>
+      <div class="drive-pill">🚗 2.5 hrs from Moab · 150 mi</div>
+      <div class="drive-line"></div>
+    </div>
+
+    <!-- STOP 3: PAGE -->
+    <div class="stop" id="stop-3">
+      <div class="stop-header" onclick="toggleStop(3)">
+        <div class="stop-num" id="num-3">3</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap">
+            <span class="stop-name">🌊 Page, Arizona</span>
+            <span class="stop-tag">Slot Canyons &amp; Horseshoe Bend</span>
+          </div>
+          <div class="stop-dates">Jun 18–19 · 2 nights</div>
+        </div>
+        <span class="stop-arrow" id="arrow-3">▼</span>
+      </div>
+      <div class="panel" id="panel-3">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(3,'overview',this)">Overview</button>
+          <button class="tab-btn" onclick="switchTab(3,'camping',this)">Camping</button>
+          <button class="tab-btn" onclick="switchTab(3,'hikes',this)">Hikes</button>
+          <button class="tab-btn" onclick="switchTab(3,'video',this)">Video</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active" id="3-overview">
+            <p class="description">2.5 hrs from Moab. Two of the most jaw-dropping sights in the US in one tiny town — Antelope Canyon's surreal light beams and Horseshoe Bend's sweeping Colorado River curve. Don't skip this.</p>
+            <div class="section-label">Must-Do</div>
+            <div class="must-do-list">
+              <div class="must-do-item"><span class="arrow">→</span>Antelope Canyon tour — book in advance at navajotours.com</div>
+              <div class="must-do-item"><span class="arrow">→</span>Horseshoe Bend at sunrise (get there early, gets crowded fast)</div>
+              <div class="must-do-item"><span class="arrow">→</span>Swim or kayak at Lake Powell</div>
+            </div>
+            <a href="https://maps.google.com/?q=Page+Arizona" target="_blank" class="btn-blue">📍 Open in Google Maps</a>
+          </div>
+          <div class="tab-pane" id="3-camping">
+            <div class="camp-box">
+              <div class="camp-name">🏕️ Wahweap Campground</div>
+              <div class="camp-price">~$30/night</div>
+              <div class="camp-tip">💡 Right on Lake Powell with amazing views. Alternatively, Lone Rock Beach BLM camping is $14/night and lets you camp right on the water — find it on The Dyrt.</div>
+            </div>
+            <div class="btn-group">
+              <a href="https://maps.google.com/?q=Wahweap+Campground+Page+Arizona" target="_blank" class="btn-blue">📍 Google Maps</a>
+              <a href="https://thedyrt.com/camping/arizona/page" target="_blank" class="btn-outline">🏕️ The Dyrt</a>
+              <a href="https://recreation.gov" target="_blank" class="btn-outline">🏛️ Recreation.gov</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="3-hikes">
+            <div class="hike-card">
+              <div class="hike-name">🥾 Horseshoe Bend Trail</div>
+              <div class="hike-desc">1.5mi · Easy · The Colorado River 1,000 ft below you</div>
+              <a href="https://www.alltrails.com/trail/us/arizona/horseshoe-bend-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+            <div class="hike-card">
+              <div class="hike-name">🥾 Wire Pass to Buckskin Gulch</div>
+              <div class="hike-desc">3.4mi · Easy · Incredible slot canyon hike nearby</div>
+              <a href="https://www.alltrails.com/trail/us/utah/wire-pass-to-buckskin-gulch" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="3-video">
+            <div class="section-label" style="margin-bottom:0.7rem">YouTube Travel Guide</div>
+            <div class="video-wrap">
+              <iframe src="https://www.youtube.com/embed/9U8U6LiCFVQ" title="Page Arizona travel guide" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <a href="https://www.youtube.com/results?search_query=Page+Arizona+Antelope+Canyon+Horseshoe+Bend+travel+guide" target="_blank" class="video-more">🎬 More videos on YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DRIVE PILL -->
+    <div class="drive-row">
+      <div class="drive-line"></div>
+      <div class="drive-pill">🚗 3 hrs from Page · 175 mi</div>
+      <div class="drive-line"></div>
+    </div>
+
+    <!-- STOP 4: SCOTTSDALE -->
+    <div class="stop" id="stop-4">
+      <div class="stop-header" onclick="toggleStop(4)">
+        <div class="stop-num" id="num-4">4</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap">
+            <span class="stop-name">🌵 Scottsdale, Arizona</span>
+            <span class="stop-tag">Grandma's House</span>
+          </div>
+          <div class="stop-dates">Jun 20–27 · 8 days</div>
+        </div>
+        <span class="stop-arrow" id="arrow-4">▼</span>
+      </div>
+      <div class="panel" id="panel-4">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(4,'overview',this)">Overview</button>
+          <button class="tab-btn" onclick="switchTab(4,'camping',this)">Camping</button>
+          <button class="tab-btn" onclick="switchTab(4,'hikes',this)">Hikes</button>
+          <button class="tab-btn" onclick="switchTab(4,'video',this)">Video</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane active" id="4-overview">
+            <p class="description">3 hrs from Page. End the trip at Grandma's in Scottsdale — family time, pool days, great food, and the Sonoran Desert. Old Town Scottsdale is genuinely fun to walk around.</p>
+            <div class="section-label">Must-Do</div>
+            <div class="must-do-list">
+              <div class="must-do-item"><span class="arrow">→</span>Old Town Scottsdale — food, art galleries, nightlife</div>
+              <div class="must-do-item"><span class="arrow">→</span>Desert Botanical Garden in Phoenix</div>
+              <div class="must-do-item"><span class="arrow">→</span>Saguaro Lake — kayak or boat tour</div>
+              <div class="must-do-item"><span class="arrow">→</span>Day trip to Grand Canyon (3.5 hrs) if Grandma's up for it!</div>
+            </div>
+            <a href="https://maps.google.com/?q=Scottsdale+Arizona" target="_blank" class="btn-blue">📍 Open in Google Maps</a>
+          </div>
+          <div class="tab-pane" id="4-camping">
+            <div class="camp-box">
+              <div class="camp-name">🏠 Stay with Grandma</div>
+              <div class="camp-tip">💡 Home base! If you want a night under the stars, McDowell Mountain Regional Park is 20 min away and has great tent camping for ~$30/night.</div>
+            </div>
+            <div class="btn-group">
+              <a href="https://maps.google.com/?q=Scottsdale+Arizona" target="_blank" class="btn-blue">📍 Google Maps</a>
+              <a href="https://thedyrt.com/camping/arizona/scottsdale" target="_blank" class="btn-outline">🏕️ The Dyrt</a>
+              <a href="https://recreation.gov" target="_blank" class="btn-outline">🏛️ Recreation.gov</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="4-hikes">
+            <div class="hike-card">
+              <div class="hike-name">🥾 Tom's Thumb Trail</div>
+              <div class="hike-desc">4.3mi · Hard · Best hike in the McDowell Sonoran Preserve</div>
+              <a href="https://www.alltrails.com/trail/us/arizona/toms-thumb-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+            <div class="hike-card">
+              <div class="hike-name">🥾 Lost Dog Wash Trail</div>
+              <div class="hike-desc">3.5mi · Easy · Great morning desert walk</div>
+              <a href="https://www.alltrails.com/trail/us/arizona/lost-dog-wash-trail" target="_blank" class="hike-link">View on AllTrails →</a>
+            </div>
+          </div>
+          <div class="tab-pane" id="4-video">
+            <div class="section-label" style="margin-bottom:0.7rem">YouTube Travel Guide</div>
+            <div class="video-wrap">
+              <iframe src="https://www.youtube.com/embed/0NtlJMNozEU" title="Scottsdale Arizona travel guide" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <a href="https://www.youtube.com/results?search_query=Scottsdale+Arizona+things+to+do+travel+guide" target="_blank" class="video-more">🎬 More videos on YouTube →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLIGHTS -->
+    <div class="flights-section">
+      <div class="flights-header">
+        <span style="font-size:1.4rem">✈️</span>
+        <div>
+          <div class="flights-header-title">Flights to Denver — Philly Area Airports</div>
+          <div class="flights-header-sub">PHL (Philadelphia) · EWR (Newark) → DEN (Denver) · ~45 min drive to Boulder</div>
+        </div>
+      </div>
+      <div class="flights-body">
+        <div class="flight-note">
+          💡 <strong>Denver (DEN) is your best bet</strong> — direct flights from PHL, only 45 min drive to Boulder. June is actually one of the cheaper months to fly this route. Frontier and Southwest are consistently the cheapest. Book 4–8 weeks out for the best price. <strong>Avoid checked bags on Frontier/Spirit</strong> — they'll add $40–70 each way.
+        </div>
+
+        <div class="flight-card">
+          <div>
+            <div class="flight-airline">🟠 Frontier Airlines</div>
+            <div class="flight-route">PHL → DEN · Direct · ~4 hrs</div>
+          </div>
+          <div style="text-align:right">
+            <div class="flight-price">from ~$39<span class="flight-price-note">one-way, sale fares</span></div>
+          </div>
+          <a href="https://flights.flyfrontier.com/en/flights-from-philadelphia-to-denver" target="_blank" class="flight-search-btn">Search Frontier →</a>
+        </div>
+
+        <div class="flight-card">
+          <div>
+            <div class="flight-airline">🔵 Southwest Airlines</div>
+            <div class="flight-route">PHL → DEN · Direct · ~4.5 hrs</div>
+          </div>
+          <div style="text-align:right">
+            <div class="flight-price">from ~$79<span class="flight-price-note">one-way, free bags included</span></div>
+          </div>
+          <a href="https://www.southwest.com/air/booking/select.html?originationAirportCode=PHL&destinationAirportCode=DEN" target="_blank" class="flight-search-btn">Search Southwest →</a>
+        </div>
+
+        <div class="flight-card">
+          <div>
+            <div class="flight-airline">🔴 American Airlines</div>
+            <div class="flight-route">PHL → DEN · Direct · ~4 hrs</div>
+          </div>
+          <div style="text-align:right">
+            <div class="flight-price">from ~$148<span class="flight-price-note">one-way, more reliable schedule</span></div>
+          </div>
+          <a href="https://www.aa.com/booking/search?locale=en_US&pax=1&adult=1&type=OneWay&searchType=matrix&cabin=&carriers=AA&slices=%5B%7B%22orig%22:%22PHL%22,%22origCountry%22:%22US%22,%22dest%22:%22DEN%22,%22destCountry%22:%22US%22,%22date%22:%222026-06-05%22%7D%5D" target="_blank" class="flight-search-btn">Search AA →</a>
+        </div>
+
+        <div class="flight-card" style="background:#f8fafc">
+          <div>
+            <div class="flight-airline">🌐 Newark (EWR) Option</div>
+            <div class="flight-route">EWR → DEN · Direct · ~4.5 hrs · Worth checking if PHL is pricey</div>
+          </div>
+          <div style="text-align:right">
+            <div class="flight-price">compare<span class="flight-price-note">sometimes $20–40 cheaper</span></div>
+          </div>
+          <a href="https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA2LTA1agcIARIDRU5ZcgcIARIDREVO" target="_blank" class="flight-search-btn">Search EWR →</a>
+        </div>
+
+        <div class="flights-cta">
+          <a href="https://www.google.com/travel/flights/search?tfs=CBwQAhoeEgoyMDI2LTA2LTA1agcIARIDUEhMcgcIARIDREVO" target="_blank" class="flight-search-outline">🔍 Compare all PHL→DEN on Google Flights</a>
+          <a href="https://www.kayak.com/flights/PHL-DEN/2026-06-05?sort=price_a" target="_blank" class="flight-search-outline">🔍 Search on Kayak</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="section-label">Essential Links</div>
+      <div class="footer-links">
+        <a href="https://www.google.com/maps/dir/Boulder,+CO/Moab,+UT/Page,+AZ/Scottsdale,+AZ" target="_blank" class="footer-link">🗺️ Full Route</a>
+        <a href="https://thedyrt.com" target="_blank" class="footer-link">🏕️ The Dyrt</a>
+        <a href="https://recreation.gov" target="_blank" class="footer-link">🏛️ Recreation.gov</a>
+        <a href="https://alltrails.com" target="_blank" class="footer-link">🥾 AllTrails</a>
+        <a href="https://www.navajotours.com" target="_blank" class="footer-link">🪨 Antelope Canyon Tours</a>
+      </div>
+      <div class="footer-end">Have an incredible trip. 🌵</div>
+    </div>
+
+  </div><!-- /main -->
+
+  <script>
+    function toggleStop(id) {
+      const panel = document.getElementById('panel-' + id);
+      const header = panel.previousElementSibling;
+      const arrow = document.getElementById('arrow-' + id);
+      const num = document.getElementById('num-' + id);
+      const isOpen = panel.classList.contains('open');
+      panel.classList.toggle('open', !isOpen);
+      header.classList.toggle('open', !isOpen);
+      arrow.textContent = isOpen ? '▼' : '▲';
+    }
+
+    function switchTab(stopId, tabName, btn) {
+      // Deactivate all panes for this stop
+      const content = btn.closest('.tab-content');
+      content.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      // Deactivate all tab buttons
+      btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      // Activate selected
+      document.getElementById(stopId + '-' + tabName).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
